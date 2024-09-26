@@ -5,9 +5,11 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+library(ggridges)
 ```
 
-*Importing Data*
+**Importing Data**
+
 ```{r}
 weather_df = 
   rnoaa::meteo_pull_monitors(
@@ -26,7 +28,7 @@ weather_df =
   select(name, id, everything())
 ```
 
-*First Plot*
+**First Plot**
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) + 
@@ -47,7 +49,8 @@ gg_weather_scatterplot <-
 gg_weather_scatterplot
 ```
 
-Checking why rows are missing
+**Checking why rows are missing**
+
 ```{r}
 weather_df %>% 
   filter(is.na(tmax))
@@ -63,11 +66,14 @@ weather_df %>%
 ```
 
 - alpha makes the points transparent
+
 - size scales the points to make them larger/smaller
+
 - geom_smooth gives a smooth curve fit through the scatterplot 
+
   - se is standard error bars 
 
-*Where you define aesthetics can matter*
+**Where you define aesthetics can matter**
 
 ```{r}
 weather_df %>% 
@@ -83,7 +89,7 @@ understand the color
 
 - If you put aes() in the ggplot() definition makes the color defined everywhere
 
-*Use faceting*
+**Use* faceting**
 
 ```{r}
 weather_df %>%  
@@ -95,7 +101,7 @@ weather_df %>%
 
 - Facet splits the data into different plots
 
-*More Interesting Scatterplot*
+**More Interesting Scatterplot**
 
 ```{r}
 weather_df %>% 
@@ -122,3 +128,113 @@ weather_df %>%
 ```
 
 - Can change the method that geom_smooth uses with the method argument
+
+## Small Things 
+
+```{r}
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_smooth(se = FALSE) 
+```
+
+- Can just create the line
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_hex()
+```
+
+- Makes a hex plot 
+
+```{r}
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax, color = "blue")) + 
+  geom_point()
+```
+
+- Tries to create a variable named blue and color the points that color 
+
+```{r}
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(color = "blue")
+```
+
+- Changes the color of all the points 
+
+# Univariate Plots 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_histogram(position = "dodge")
+```
+
+- Creates a histogram, but is hard to read
+
+**How to fix this**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_histogram() + 
+  facet_grid(.~name)
+```
+
+**Density Plot**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_density(alpha = 0.3)
+```
+
+- Like a smoothed histogram
+
+
+**Box Plot**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_boxplot()
+```
+
+**Violin Plots**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_violin()
+```
+
+- Takes the density and flips it  to make it vertical
+
+**Ridge Plots**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = name)) + 
+  geom_density_ridges()
+```
+
+- Each density is separated vertically
+
+**Example**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = 0.3)
+
+weather_df %>% 
+  ggplot(aes( x = name, y = prcp)) + 
+  geom_boxplot()
+
+weather_df %>% 
+  filter(prcp > 10) %>% 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = 0.3)
+```
+

@@ -16,7 +16,11 @@ library(tidyverse)
     ## ✖ dplyr::lag()    masks stats::lag()
     ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
-*Importing Data*
+``` r
+library(ggridges)
+```
+
+**Importing Data**
 
 ``` r
 weather_df = 
@@ -54,7 +58,7 @@ weather_df =
 
     ## file min/max dates: 1999-09-01 / 2024-09-30
 
-*First Plot*
+**First Plot**
 
 ``` r
 ggplot(weather_df, aes(x = tmin, y = tmax)) + 
@@ -90,7 +94,7 @@ gg_weather_scatterplot
 
 ![](visualization_1_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-Checking why rows are missing
+**Checking why rows are missing**
 
 ``` r
 weather_df %>% 
@@ -138,11 +142,14 @@ weather_df %>%
 ![](visualization_1_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 - alpha makes the points transparent
+
 - size scales the points to make them larger/smaller
+
 - geom_smooth gives a smooth curve fit through the scatterplot
+
   - se is standard error bars
 
-*Where you define aesthetics can matter*
+**Where you define aesthetics can matter**
 
 ``` r
 weather_df %>% 
@@ -169,7 +176,7 @@ weather_df %>%
 - If you put aes() in the ggplot() definition makes the color defined
   everywhere
 
-*Use faceting*
+**Use\* faceting**
 
 ``` r
 weather_df %>%  
@@ -191,7 +198,7 @@ weather_df %>%
 
 - Facet splits the data into different plots
 
-*More Interesting Scatterplot*
+**More Interesting Scatterplot**
 
 ``` r
 weather_df %>% 
@@ -253,3 +260,185 @@ weather_df %>%
 ![](visualization_1_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 - Can change the method that geom_smooth uses with the method argument
+
+## Small Things
+
+``` r
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_smooth(se = FALSE) 
+```
+
+    ## `geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+- Can just create the line
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_hex()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_binhex()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+- Makes a hex plot
+
+``` r
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax, color = "blue")) + 
+  geom_point()
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+- Tries to create a variable named blue and color the points that color
+
+``` r
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(color = "blue")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+- Changes the color of all the points
+
+# Univariate Plots
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_histogram(position = "dodge")
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+- Creates a histogram, but is hard to read
+
+**How to fix this**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_histogram() + 
+  facet_grid(.~name)
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_bin()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+**Density Plot**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, fill = name)) + 
+  geom_density(alpha = 0.3)
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+- Like a smoothed histogram
+
+**Box Plot**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_boxplot()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+**Violin Plots**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = name, y = tmin, fill = name)) + 
+  geom_violin()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+- Takes the density and flips it to make it vertical
+
+**Ridge Plots**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmin, y = name)) + 
+  geom_density_ridges()
+```
+
+    ## Picking joint bandwidth of 1.41
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density_ridges()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+- Each density is separated vertically
+
+**Example**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = 0.3)
+```
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+weather_df %>% 
+  ggplot(aes( x = name, y = prcp)) + 
+  geom_boxplot()
+```
+
+    ## Warning: Removed 15 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
+
+``` r
+weather_df %>% 
+  filter(prcp > 10) %>% 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = 0.3)
+```
+
+![](visualization_1_files/figure-gfm/unnamed-chunk-22-3.png)<!-- -->
