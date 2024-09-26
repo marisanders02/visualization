@@ -7,7 +7,7 @@ output: github_document
 library(tidyverse)
 ```
 
-
+*Importing Data*
 ```{r}
 weather_df = 
   rnoaa::meteo_pull_monitors(
@@ -26,7 +26,7 @@ weather_df =
   select(name, id, everything())
 ```
 
-First Plot
+*First Plot*
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) + 
@@ -39,7 +39,6 @@ weather_df %>%
   geom_point()
 ```
 
-
 ```{r}
 gg_weather_scatterplot <- 
   weather_df %>%  
@@ -48,3 +47,78 @@ gg_weather_scatterplot <-
 gg_weather_scatterplot
 ```
 
+Checking why rows are missing
+```{r}
+weather_df %>% 
+  filter(is.na(tmax))
+```
+
+## Fancier Scatterplot 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = 0.3, size = 0.8) + 
+  geom_smooth(se = FALSE)
+```
+
+- alpha makes the points transparent
+- size scales the points to make them larger/smaller
+- geom_smooth gives a smooth curve fit through the scatterplot 
+  - se is standard error bars 
+
+*Where you define aesthetics can matter*
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = 0.3, size = 0.8) + 
+  geom_smooth(se = FALSE)
+```
+
+- Only get one smooth curve 
+
+- aes() defines the color for only the points and then geom smooth doesn't 
+understand the color
+
+- If you put aes() in the ggplot() definition makes the color defined everywhere
+
+*Use faceting*
+
+```{r}
+weather_df %>%  
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+```
+
+- Facet splits the data into different plots
+
+*More Interesting Scatterplot*
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+```
+
+- Can see the seasonal trend because the x axis is date 
+
+- When the dots are large, this means there is more precipitation
+
+```{r}
+weather_df %>% 
+  filter(name == "CentralPark_NY") %>% 
+  mutate(tmin, 
+         tmin_f = tmin * (9/5) + 32) %>% 
+  mutate(tmax, tmax_f = tmax * (9/5) + 32) %>% 
+  ggplot(aes(x = tmin_f, y = tmax_f)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+  
+```
+
+- Can change the method that geom_smooth uses with the method argument
