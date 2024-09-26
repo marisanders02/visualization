@@ -238,3 +238,24 @@ weather_df %>%
   geom_density(alpha = 0.3)
 ```
 
+## Saving and embedding plots
+
+**Saving Plots**
+```{r}
+ggp_weather <- 
+  weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point()
+
+ggsave("ggp_weather.pdf", ggp_weather, width = 8, height = 6)
+```
+
+**Embedding Plots**
+
+```{r, fig.width = 6, fig.asp = 0.6}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point()
+```
+
+- Can change the width and height of the plot
