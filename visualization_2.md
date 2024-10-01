@@ -1,25 +1,6 @@
 Visualization 2
 ================
 
-``` r
-library(tidyverse)
-```
-
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.2     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-
-``` r
-library(patchwork)
-```
-
 **Importing Data**
 
 ``` r
@@ -76,7 +57,7 @@ weather_df %>%
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 **Scales**
 
@@ -111,7 +92,7 @@ weather_df %>%
     ## Warning: Removed 302 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 **Color**
 
@@ -142,7 +123,7 @@ ggp_scatterplot +
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 ggp_scatterplot + 
@@ -153,7 +134,7 @@ ggp_scatterplot +
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 - Order Matters
 
@@ -166,7 +147,7 @@ ggp_scatterplot +
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 - `Theme_bw()` resets the whole plot, so you have to put them in a
   specific order
@@ -179,7 +160,7 @@ ggp_scatterplot + theme(legend.position = "bottom") +
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 ggp_scatterplot + theme(legend.position = "bottom") + 
@@ -189,7 +170,7 @@ ggp_scatterplot + theme(legend.position = "bottom") +
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 **Learning Assessment**
 
@@ -229,7 +210,7 @@ weather_df %>%
     ## Warning: Removed 19 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 **Bonus `ggplot` Features**
 
@@ -253,7 +234,7 @@ molokai_df %>%
     ## Warning: Removed 1 row containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ## Multiple Panels
 
@@ -267,7 +248,7 @@ weather_df %>%
     ## Warning: Removed 17 rows containing non-finite outside the scale range
     ## (`stat_density()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 ggp_tmax_tmin <- 
@@ -304,4 +285,100 @@ ggp_tmax_date <-
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
+![](visualization_2_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+## Data Manipulation
+
+``` r
+weather_df %>% 
+  mutate(name = fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhold_WA"))) %>% 
+  ggplot(aes(x = name, y = tmax, fill = name)) + 
+  geom_violin(alpha = 0.5)
+```
+
+    ## Warning: There was 1 warning in `mutate()`.
+    ## ℹ In argument: `name = fct_relevel(name, c("Molokai_HI", "CentralPark_NY",
+    ##   "Waterhold_WA"))`.
+    ## Caused by warning:
+    ## ! 1 unknown level in `f`: Waterhold_WA
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_ydensity()`).
+
 ![](visualization_2_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+**Pulse Data**
+
+``` r
+pulse_df <- 
+  read_sas("data/public_pulse_data.sas7bdat") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    cols = bdi_score_bl:bdi_score_12m,
+    names_to = "visit",
+    values_to = "bdi_score",
+    names_prefix = "bdi_score_"
+    ) %>% 
+  mutate(visit = ifelse(visit == "bl", "00m", visit))
+pulse_df %>% 
+  ggplot(aes(x = visit, y = bdi_score)) + 
+  geom_boxplot()
+```
+
+    ## Warning: Removed 879 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
+pups_df <- 
+  read_csv("data/FAS_pups.csv", na = c("NA", ".","")) %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    cols = pd_ears:pd_walk, 
+    values_to = "pn_day", 
+    names_to = "outcome",
+    names_prefix = "pd_"
+  )
+```
+
+    ## Rows: 313 Columns: 6
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (1): Litter Number
+    ## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+litters_df <- 
+  read_csv("data/FAS_litters.csv", na = c("NA", ".","")) %>% 
+  janitor::clean_names() %>% 
+  separate(group, into = c("dose", "tx_day"), 3)
+```
+
+    ## Rows: 49 Columns: 8
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (2): Group, Litter Number
+    ## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+fas_data <- 
+  left_join(pups_df,litters_df, by = "litter_number") 
+
+fas_data %>% 
+  drop_na(tx_day) %>%
+  ggplot(aes(x = dose, y = pn_day)) + 
+  geom_boxplot() + 
+  facet_grid(tx_day ~ outcome)
+```
+
+    ## Warning: Removed 42 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
