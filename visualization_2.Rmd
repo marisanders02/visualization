@@ -73,7 +73,8 @@ weather_df %>%
 `viridis` package has nice color scales 
 
 ```{r}
-weather_df %>% 
+ggp_scatterplot <- 
+  weather_df %>% 
   ggplot(aes(x = tmin, y = tmax, color = name)) + 
   geom_point(alpha = 0.3) + 
   labs(
@@ -85,4 +86,106 @@ weather_df %>%
   ) + 
   viridis::scale_color_viridis(discrete = TRUE)
 ```
+
+**Themes**
+
+```{r}
+ggp_scatterplot + 
+  theme(legend.position = "bottom")
+```
+
+```{r}
+ggp_scatterplot + 
+  theme_bw() + 
+  theme(legend.position = "bottom")
+```
+
+- Order Matters 
+
+```{r}
+ggp_scatterplot + 
+  theme(legend.position = "bottom") + 
+  theme_bw() 
+```
+
+- `Theme_bw()` resets the whole plot, so you have to put them in a specific order
+
+```{r}
+ggp_scatterplot + theme(legend.position = "bottom") + 
+  theme_classic()
+```
+
+```{r}
+ggp_scatterplot + theme(legend.position = "bottom") + 
+  ggthemes::theme_excel()
+```
+
+**Learning Assessment**
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Seasonal Variation in Maximum Temperature",
+    x = "Date", 
+    y = "Maximum Temperature (C)", 
+    size = "Precipitation"
+  ) +
+  viridis::scale_color_viridis(discrete = TRUE)  + 
+  theme_minimal() +
+  theme(legend.position = "bottom") 
+```
+
+**Bonus `ggplot` Features**
+
+- Use different data sets in different `geoms` 
+
+```{r}
+central_park_df <- 
+  weather_df %>% 
+  filter(name == "CentralPark_NY")
+
+molokai_df <- 
+  weather_df %>% 
+  filter(name == "Molokai_HI")
+
+molokai_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_line(data = central_park_df)
+```
+
+## Multiple Panels 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) + 
+  geom_density() + 
+  facet_grid(.~name)
+```
+
+
+```{r}
+ggp_tmax_tmin <- 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = 0.3)
+
+ggp_tmax_density <- 
+  weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) + 
+  geom_density() + 
+  facet_grid(.~name)
+
+ggp_tmax_date <- 
+  weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+
+(ggp_tmax_tmin + ggp_tmax_density) / ggp_tmax_date
+```
+
 

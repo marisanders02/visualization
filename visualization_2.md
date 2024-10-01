@@ -118,7 +118,8 @@ weather_df %>%
 `viridis` package has nice color scales
 
 ``` r
-weather_df %>% 
+ggp_scatterplot <- 
+  weather_df %>% 
   ggplot(aes(x = tmin, y = tmax, color = name)) + 
   geom_point(alpha = 0.3) + 
   labs(
@@ -131,7 +132,176 @@ weather_df %>%
   viridis::scale_color_viridis(discrete = TRUE)
 ```
 
+**Themes**
+
+``` r
+ggp_scatterplot + 
+  theme(legend.position = "bottom")
+```
+
     ## Warning: Removed 17 rows containing missing values or values outside the scale range
     ## (`geom_point()`).
 
-![](visualization_2_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](visualization_2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+ggp_scatterplot + 
+  theme_bw() + 
+  theme(legend.position = "bottom")
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+- Order Matters
+
+``` r
+ggp_scatterplot + 
+  theme(legend.position = "bottom") + 
+  theme_bw() 
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+- `Theme_bw()` resets the whole plot, so you have to put them in a
+  specific order
+
+``` r
+ggp_scatterplot + theme(legend.position = "bottom") + 
+  theme_classic()
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
+ggp_scatterplot + theme(legend.position = "bottom") + 
+  ggthemes::theme_excel()
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+**Learning Assessment**
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Seasonal Variation in Maximum Temperature",
+    x = "Date", 
+    y = "Maximum Temperature (C)", 
+    size = "Precipitation"
+  ) +
+  viridis::scale_color_viridis(discrete = TRUE)  + 
+  theme_minimal() +
+  theme(legend.position = "bottom") 
+```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+    ## Warning: The following aesthetics were dropped during statistical transformation: size.
+    ## ℹ This can happen when ggplot fails to infer the correct grouping structure in
+    ##   the data.
+    ## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+    ##   variable into a factor?
+
+    ## Warning: Removed 19 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+**Bonus `ggplot` Features**
+
+- Use different data sets in different `geoms`
+
+``` r
+central_park_df <- 
+  weather_df %>% 
+  filter(name == "CentralPark_NY")
+
+molokai_df <- 
+  weather_df %>% 
+  filter(name == "Molokai_HI")
+
+molokai_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_line(data = central_park_df)
+```
+
+    ## Warning: Removed 1 row containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+## Multiple Panels
+
+``` r
+weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) + 
+  geom_density() + 
+  facet_grid(.~name)
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
+ggp_tmax_tmin <- 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = 0.3)
+
+ggp_tmax_density <- 
+  weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) + 
+  geom_density() + 
+  facet_grid(.~name)
+
+ggp_tmax_date <- 
+  weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+
+(ggp_tmax_tmin + ggp_tmax_density) / ggp_tmax_date
+```
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
+
+    ## Warning: Removed 17 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
+
+![](visualization_2_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
