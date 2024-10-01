@@ -258,4 +258,4 @@ weather_df %>%
   geom_point()
 ```
 
-- Can change the width and height of the plot
+- Can change the width and height of the plot in the markdown file
