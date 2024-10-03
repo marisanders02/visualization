@@ -186,3 +186,139 @@ weather_df %>%
     ##    Waterhole_WA  319      395
 
 ## General Numeric Summaries
+
+``` r
+weather_df %>% 
+  group_by(name) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), 
+    median_tmin = median(tmin, na.rm = TRUE), 
+    sd_prcp = sd(prcp, na.rm = TRUE)
+  )
+```
+
+    ## # A tibble: 3 × 4
+    ##   name           mean_tmax median_tmin sd_prcp
+    ##   <chr>              <dbl>       <dbl>   <dbl>
+    ## 1 CentralPark_NY     17.7         10     113. 
+    ## 2 Molokai_HI         28.3         20.6    63.2
+    ## 3 Waterhole_WA        7.38        -0.6   111.
+
+``` r
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), 
+    median_tmin = median(tmin, na.rm = TRUE), 
+    sd_prcp = sd(prcp, na.rm = TRUE)
+  )
+```
+
+    ## # A tibble: 24 × 4
+    ##    month      mean_tmax median_tmin sd_prcp
+    ##    <date>         <dbl>       <dbl>   <dbl>
+    ##  1 2021-01-01     10.9         0.6    113. 
+    ##  2 2021-02-01      9.82       -1.65    83.4
+    ##  3 2021-03-01     13.7         5      107. 
+    ##  4 2021-04-01     16.8         8.05    37.0
+    ##  5 2021-05-01     19.6        11.1     48.1
+    ##  6 2021-06-01     24.3        17.8     38.6
+    ##  7 2021-07-01     25.2        21.1     96.6
+    ##  8 2021-08-01     25.2        21.1    141. 
+    ##  9 2021-09-01     22.4        17.5    200. 
+    ## 10 2021-10-01     18.2        13.9    112. 
+    ## # ℹ 14 more rows
+
+``` r
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), 
+    median_tmin = median(tmin, na.rm = TRUE), 
+    sd_prcp = sd(prcp, na.rm = TRUE)
+  )
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 72 × 5
+    ## # Groups:   name [3]
+    ##    name           month      mean_tmax median_tmin sd_prcp
+    ##    <chr>          <date>         <dbl>       <dbl>   <dbl>
+    ##  1 CentralPark_NY 2021-01-01      4.27       -0.5     47.3
+    ##  2 CentralPark_NY 2021-02-01      3.87       -1.85    98.1
+    ##  3 CentralPark_NY 2021-03-01     12.3         5       71.3
+    ##  4 CentralPark_NY 2021-04-01     17.6         8.05    52.4
+    ##  5 CentralPark_NY 2021-05-01     22.1        11.1     74.7
+    ##  6 CentralPark_NY 2021-06-01     28.1        18.0     43.3
+    ##  7 CentralPark_NY 2021-07-01     28.4        21.1    151. 
+    ##  8 CentralPark_NY 2021-08-01     28.8        22.2    236. 
+    ##  9 CentralPark_NY 2021-09-01     24.8        17.5    333. 
+    ## 10 CentralPark_NY 2021-10-01     19.9        13.9    151. 
+    ## # ℹ 62 more rows
+
+**Summarize and Plot**
+
+``` r
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), 
+    median_tmin = median(tmin, na.rm = TRUE), 
+    sd_prcp = sd(prcp, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
+  geom_point() + 
+  geom_line()
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+![](eda_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+**Format for Readers**
+
+``` r
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) %>% 
+  pivot_wider(
+    names_from = name, 
+    values_from = mean_tmax
+  ) %>% 
+  knitr::kable()
+```
+
+    ## `summarise()` has grouped output by 'name'. You can override using the
+    ## `.groups` argument.
+
+| month      | CentralPark_NY | Molokai_HI | Waterhole_WA |
+|:-----------|---------------:|-----------:|-------------:|
+| 2021-01-01 |       4.270968 |   27.61613 |    0.8000000 |
+| 2021-02-01 |       3.867857 |   26.36786 |   -0.7857143 |
+| 2021-03-01 |      12.293548 |   25.86129 |    2.6233333 |
+| 2021-04-01 |      17.606667 |   26.56667 |    6.0966667 |
+| 2021-05-01 |      22.083871 |   28.57742 |    8.2032258 |
+| 2021-06-01 |      28.056667 |   29.58667 |   15.2533333 |
+| 2021-07-01 |      28.351613 |   29.99355 |   17.3354839 |
+| 2021-08-01 |      28.809677 |   29.52258 |   17.1516129 |
+| 2021-09-01 |      24.786667 |   29.67333 |   12.6466667 |
+| 2021-10-01 |      19.925807 |   29.12903 |    5.4806452 |
+| 2021-11-01 |      11.536667 |   28.84667 |    3.5333333 |
+| 2021-12-01 |       9.587097 |   26.19032 |   -2.0965517 |
+| 2022-01-01 |       2.854839 |   26.60645 |    3.6064516 |
+| 2022-02-01 |       7.650000 |   26.82857 |    2.9888889 |
+| 2022-03-01 |      11.990323 |   27.72581 |    3.4161290 |
+| 2022-04-01 |      15.810000 |   27.72333 |    2.4633333 |
+| 2022-05-01 |      22.254839 |   28.28333 |    5.8096774 |
+| 2022-06-01 |      26.090000 |   29.15667 |   11.1266667 |
+| 2022-07-01 |      30.722581 |   29.52903 |   15.8612903 |
+| 2022-08-01 |      30.500000 |   30.69677 |   18.8300000 |
+| 2022-09-01 |      24.923333 |   30.41333 |   15.2066667 |
+| 2022-10-01 |      17.425807 |   29.22258 |   11.8838710 |
+| 2022-11-01 |      14.016667 |   27.96000 |    2.1400000 |
+| 2022-12-01 |       6.761290 |   27.34839 |   -0.4600000 |
